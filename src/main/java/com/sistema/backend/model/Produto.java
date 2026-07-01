@@ -1,6 +1,11 @@
 package com.sistema.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
 @Entity
@@ -10,9 +15,21 @@ public class Produto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "O nome do jogo é obrigatório.")
+    @Size(min = 2, max = 100, message = "O nome deve ter entre 2 e 100 caracteres.")
     private String nome;
+
+    @NotBlank(message = "A plataforma é obrigatória.")
+    @Size(min = 2, max = 50, message = "A plataforma deve ter entre 2 e 50 caracteres.")
     private String plataforma;
+
+    @NotBlank(message = "O gênero é obrigatório.")
+    @Size(min = 2, max = 50, message = "O gênero deve ter entre 2 e 50 caracteres.")
     private String genero;
+
+    @NotNull(message = "O preço é obrigatório.")
+    @DecimalMin(value = "0.01", message = "O preço deve ser maior que zero.")
+    @DecimalMax(value = "99999.99", message = "O preço deve ser menor que R$ 99.999,99.")
     private BigDecimal preco;
 
     public Produto() {}
