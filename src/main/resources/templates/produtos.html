@@ -25,6 +25,25 @@
             --err-bg:    #fdf1f0;
             --err-ink:   #7c1f1f;
             --err-border:#f0c0be;
+            --hover-bg:  #f0ece3;
+        }
+
+        :root[data-theme="dark"] {
+            --bg:        #15130f;
+            --surface:   #1e1b16;
+            --ink:       #f2ede4;
+            --ink-mid:   #c9c0b2;
+            --ink-muted: #8a8175;
+            --gold:      #d99b3c;
+            --border:    #332d24;
+            --border-md: #453d31;
+            --ok-bg:     #16261a;
+            --ok-ink:    #8fd99a;
+            --ok-border: #2c4a34;
+            --err-bg:    #2c1616;
+            --err-ink:   #f0a8a5;
+            --err-border:#4a2626;
+            --hover-bg:  #2a251d;
         }
 
         body {
@@ -33,6 +52,7 @@
             color: var(--ink);
             min-height: 100vh;
             font-size: 15px;
+            transition: background 0.2s, color 0.2s;
         }
 
         /* barra de navegação */
@@ -60,7 +80,7 @@
             align-items: center;
             gap: 6px;
             background: var(--ink);
-            color: #fff;
+            color: var(--bg);
             text-decoration: none;
             font-size: 0.82rem;
             font-weight: 500;
@@ -70,6 +90,68 @@
         }
 
         .btn-new:hover { background: var(--gold); }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-theme {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--ink-mid);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-theme:hover { border-color: var(--gold); color: var(--gold); }
+
+        .btn-theme .icon-moon { display: none; }
+        :root[data-theme="dark"] .btn-theme .icon-sun  { display: none; }
+        :root[data-theme="dark"] .btn-theme .icon-moon { display: inline-block; }
+
+        /* barra de pesquisa */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 9px 14px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar svg { color: var(--ink-muted); flex-shrink: 0; }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            color: var(--ink);
+        }
+
+        .search-bar input::placeholder { color: var(--ink-muted); }
+
+        .search-clear {
+            font-size: 0.78rem;
+            color: var(--ink-muted);
+            text-decoration: none;
+            white-space: nowrap;
+            transition: color 0.15s;
+        }
+
+        .search-clear:hover { color: var(--gold); }
 
         /* mensagem de sucesso ou erro */
         .alert {
@@ -143,7 +225,7 @@
         }
 
         tbody tr:last-child { border-bottom: none; }
-        tbody tr:hover      { background: #f0ece3; }
+        tbody tr:hover      { background: var(--hover-bg); }
 
         tbody tr:nth-child(1)  { animation-delay: 0.04s; }
         tbody tr:nth-child(2)  { animation-delay: 0.08s; }
@@ -214,7 +296,7 @@
             transition: all 0.15s;
         }
 
-        .btn-act:hover         { background: var(--ink); border-color: var(--ink); color: #fff; }
+        .btn-act:hover         { background: var(--ink); border-color: var(--ink); color: var(--bg); }
         .btn-act.del:hover     { background: #7c1f1f; border-color: #7c1f1f; color: #fff; }
 
         /* quando nao tem nenhum produto cadastrado */
@@ -246,15 +328,29 @@
             td         { padding: 12px 10px; }
         }
     </style>
+    <script>
+        // Aplica o tema salvo antes da renderização, evitando "flash" de tela clara
+        (function () {
+            if (localStorage.getItem('gamestore-theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
 </head>
 <body>
 
 <nav>
     <a href="/produtos" class="brand">Game<span>Store</span></a>
-    <a href="/produtos/novo" class="btn-new">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Novo Jogo
-    </a>
+    <div class="nav-actions">
+        <button type="button" class="btn-theme" onclick="toggleTheme()" title="Alternar tema" aria-label="Alternar tema claro/escuro">
+            <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <a href="/produtos/novo" class="btn-new">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Jogo
+        </a>
+    </div>
 </nav>
 
 <div th:if="${mensagem}" class="alert alert-ok">
@@ -277,6 +373,14 @@
             Novo Jogo
         </a>
     </div>
+
+    <form class="search-bar" method="get" th:action="@{/produtos}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" name="busca" th:value="${busca}"
+               placeholder="Buscar por nome, plataforma, gênero ou código...">
+        <a th:if="${busca != null and !#strings.isEmpty(busca)}" href="/produtos" class="search-clear">Limpar</a>
+        <button type="submit" style="display:none"></button>
+    </form>
 
     <div class="table-wrap" th:if="${!#lists.isEmpty(produtos)}">
         <table>
@@ -323,7 +427,7 @@
         </table>
     </div>
 
-    <div class="empty" th:if="${#lists.isEmpty(produtos)}">
+    <div class="empty" th:if="${#lists.isEmpty(produtos) and (busca == null or #strings.isEmpty(busca))}">
         <h3>Nenhum jogo cadastrado</h3>
         <p>Adicione o primeiro título ao catálogo.</p>
         <a href="/produtos/novo" class="btn-new">
@@ -331,9 +435,29 @@
             Cadastrar primeiro jogo
         </a>
     </div>
+
+    <div class="empty" th:if="${#lists.isEmpty(produtos) and busca != null and !#strings.isEmpty(busca)}">
+        <h3>Nenhum resultado encontrado</h3>
+        <p th:text="'Nenhum jogo corresponde à busca por &quot;' + ${busca} + '&quot;.'">Tente outro termo.</p>
+        <a href="/produtos" class="btn-new">Limpar busca</a>
+    </div>
 </main>
 
 <footer>GameStore &middot; Sistema Acadêmico de Catálogo de Jogos Digitais</footer>
+
+<script>
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+            html.removeAttribute('data-theme');
+            localStorage.setItem('gamestore-theme', 'light');
+        } else {
+            html.setAttribute('data-theme', 'dark');
+            localStorage.setItem('gamestore-theme', 'dark');
+        }
+    }
+</script>
 
 </body>
 </html>

@@ -19,6 +19,23 @@
             --gold:      #b07d2a;
             --border:    #ddd8ce;
             --border-md: #c5bfb5;
+            --err-bg:    #fdf1f0;
+            --err-ink:   #7c1f1f;
+            --err-border:#f0c0be;
+        }
+
+        :root[data-theme="dark"] {
+            --bg:        #15130f;
+            --surface:   #1e1b16;
+            --ink:       #f2ede4;
+            --ink-mid:   #c9c0b2;
+            --ink-muted: #8a8175;
+            --gold:      #d99b3c;
+            --border:    #332d24;
+            --border-md: #453d31;
+            --err-bg:    #2c1616;
+            --err-ink:   #f0a8a5;
+            --err-border:#4a2626;
         }
 
         body {
@@ -29,6 +46,7 @@
             font-size: 15px;
             display: flex;
             flex-direction: column;
+            transition: background 0.2s, color 0.2s;
         }
 
         /* barra de navegação */
@@ -64,6 +82,44 @@
         }
 
         .back-link:hover { color: var(--gold); }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-theme {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--ink-mid);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-theme:hover { border-color: var(--gold); color: var(--gold); }
+
+        .btn-theme .icon-moon { display: none; }
+        :root[data-theme="dark"] .btn-theme .icon-sun  { display: none; }
+        :root[data-theme="dark"] .btn-theme .icon-moon { display: inline-block; }
+
+        /* mensagens de erro de validação */
+        .field-error {
+            margin-top: 6px;
+            font-size: 0.78rem;
+            color: var(--err-ink);
+        }
+
+        .field input.has-error {
+            border-color: var(--err-border);
+            background: var(--err-bg);
+        }
 
         .form-outer {
             flex: 1;
@@ -130,7 +186,7 @@
 
         .btn-save {
             background: var(--ink);
-            color: #fff;
+            color: var(--bg);
             border: none;
             font-family: 'Outfit', sans-serif;
             font-size: 0.88rem;
@@ -167,15 +223,29 @@
             .form-outer   { padding: 36px 20px 60px; }
         }
     </style>
+    <script>
+        // Aplica o tema salvo antes da renderização, evitando "flash" de tela clara
+        (function () {
+            if (localStorage.getItem('gamestore-theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
 </head>
 <body>
 
 <nav>
     <a href="/produtos" class="brand">Game<span>Store</span></a>
-    <a href="/produtos" class="back-link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Voltar ao catálogo
-    </a>
+    <div class="nav-actions">
+        <button type="button" class="btn-theme" onclick="toggleTheme()" title="Alternar tema" aria-label="Alternar tema claro/escuro">
+            <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <a href="/produtos" class="back-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Voltar ao catálogo
+        </a>
+    </div>
 </nav>
 
 <div class="form-outer">
@@ -191,25 +261,34 @@
             <div class="field">
                 <label for="nome">Nome do Jogo</label>
                 <input type="text" id="nome" th:field="*{nome}"
-                       placeholder="Ex: The Legend of Zelda" required autocomplete="off">
+                       th:classappend="${#fields.hasErrors('nome')} ? 'has-error'"
+                       placeholder="Ex: The Legend of Zelda" autocomplete="off">
+                <div class="field-error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">Erro no nome</div>
             </div>
 
             <div class="field">
                 <label for="plataforma">Plataforma</label>
                 <input type="text" id="plataforma" th:field="*{plataforma}"
-                       placeholder="PC, PlayStation 5, Xbox Series X..." required autocomplete="off">
+                       th:classappend="${#fields.hasErrors('plataforma')} ? 'has-error'"
+                       placeholder="PC, PlayStation 5, Xbox Series X..." autocomplete="off">
+                <div class="field-error" th:if="${#fields.hasErrors('plataforma')}" th:errors="*{plataforma}">Erro na plataforma</div>
             </div>
 
             <div class="field">
                 <label for="genero">Gênero</label>
                 <input type="text" id="genero" th:field="*{genero}"
-                       placeholder="RPG, FPS, Aventura, Plataforma..." required autocomplete="off">
+                       th:classappend="${#fields.hasErrors('genero')} ? 'has-error'"
+                       placeholder="RPG, FPS, Aventura, Plataforma..." autocomplete="off">
+                <div class="field-error" th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}">Erro no gênero</div>
             </div>
 
             <div class="field">
                 <label for="preco">Preço (R$)</label>
                 <input type="number" id="preco" step="0.01" min="0"
-                       th:field="*{preco}" placeholder="0,00" required>
+                       th:field="*{preco}"
+                       th:classappend="${#fields.hasErrors('preco')} ? 'has-error'"
+                       placeholder="0,00">
+                <div class="field-error" th:if="${#fields.hasErrors('preco')}" th:errors="*{preco}">Erro no preço</div>
             </div>
 
             <div class="actions">
@@ -222,6 +301,20 @@
 </div>
 
 <footer>GameStore &middot; Sistema Acadêmico de Catálogo de Jogos Digitais</footer>
+
+<script>
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+            html.removeAttribute('data-theme');
+            localStorage.setItem('gamestore-theme', 'light');
+        } else {
+            html.setAttribute('data-theme', 'dark');
+            localStorage.setItem('gamestore-theme', 'dark');
+        }
+    }
+</script>
 
 </body>
 </html>
